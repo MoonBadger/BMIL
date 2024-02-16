@@ -1,15 +1,21 @@
 import tkinter as tk
 import time
 from tkinter import *
+from tkinter import ttk
 
+import mathm
 from generator import Generator
 
 ERR_TEXT = "ERROR: incorrect values"
 generator = Generator()
 
 PASS_COUNT = 3
-vectores = []
 
+vs = []
+vector = []
+current_pass_num = 0
+passwords = []
+inp_flag = False
 
 
 root = tk.Tk()
@@ -48,6 +54,9 @@ pg_execute_button.place(x=500, y=100)
 # au_res_label = Label(text="<Auth_res>", width=30, height=1)
 # au_res_label.place(y=140, x=500)
 
+mathm.mlt([[0]], [[1]])
+mathm.haar_matrix(8)
+
 au_login_text = Text(width=15, height=1)
 au_login_text.place(y=30, x=600)
 
@@ -56,19 +65,26 @@ au_password_text.place(y=60, x=600)
 
 Label(text="Регистрация", width=30, height=1).place(x=0, y=250)
 Label(text="Логин:", width=10, height=1).place(x=0, y=280)
-Label(text="Пароль: ", width=10, height=1).place(x=0, y=310)
 
 reg_login_text = Text(width=15, height=1)
+reg_login_text.insert("1.0", "user")
 reg_login_text.place(x=100, y=280)
 
-reg_password_text = Text(width=15, height=1)
-reg_password_text.place(x=100, y=310)
+sep1 = ttk.Separator(orient=HORIZONTAL)
+sep1.pack(fill="x", pady=199)
 
-reg_ok_button = Button(width=5, height=1, text='Ok')
-reg_ok_button.place(x=250, y=310)
 
-reg_execute_button = Button(width=15, height=1, text='Отправить', state='disabled')
+# reg_ok_button = Button(width=5, height=1, text='Ok')
+# reg_ok_button.place(x=250, y=310)
+
+reg_execute_button = Button(width=15, height=1, text='Ввести пароль')
 reg_execute_button.place(x=0, y=340)
+
+reg_send_button = Button(width=15, height=1, text='Отправить в БД')
+reg_send_button.place(x=350, y=340)
+
+reg_pass_text = Text(width=15, height=1)
+reg_pass_text.place(x=190, y=345)
 
 
 def err():
@@ -102,7 +118,23 @@ def copy(*args):
     root.clipboard_append(pg_result_label['text'].split(' ')[1])
 
 
+def input_pass(*args):
+    global vs, current_pass_num, passwords, inp_flag, vector
+    passwords.append(reg_pass_text.get("1.0", END).replace("\n", ''))
+    reg_pass_text.replace('1.0', END, '')
+    vs.append(vector)
+    print(vs)
+    vector = []
+
+
+def editor_press(*args):
+    vector.append(time.time())
+
+
 pg_execute_button.bind('<Button-1>', generate_password)
 pg_copy_button.bind('<Button-1>', copy)
+reg_execute_button.bind('<Button-1>', input_pass)
+reg_pass_text.bind('<KeyPress>', editor_press)
+
 
 root.mainloop()

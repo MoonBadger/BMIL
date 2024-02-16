@@ -19,19 +19,20 @@ read_vct = []
 
 
 root = tk.Tk()
-root.title('Генератор Б/М - ветора')
+root.title('БМИЛ')
 root.geometry('800x400+300+200')
 
-Label(text=f"Длина пароля (1 - {generator.limit()}): ", width=25, height=1).place(x=0, y=0)
-Label(text=f"Длина алфавита (1 - {generator.max_len()}): ", width=25, height=1).place(x=0, y=40)
+Label(text="Генератор паролей").place(x=0, y=0)
+Label(text=f"Длина пароля (1 - {generator.limit()}): ", width=25, height=1).place(x=0, y=30)
+Label(text=f"Длина алфавита (1 - {generator.max_len()}): ", width=25, height=1).place(x=0, y=60)
 
-pg_length_text = Text(width=10, height=1)
-pg_length_text.place(x=200, y=0)
+pg_length_text = Text(width=15, height=1)
+pg_length_text.place(x=200, y=30)
 
-pg_alphabet_text = Text(width=10, height=1)
-pg_alphabet_text.place(x=200, y=40)
+pg_alphabet_text = Text(width=15, height=1)
+pg_alphabet_text.place(x=200, y=60)
 
-pg_execute_button = Button(text='Сгенерировать', width=15, height=1)
+pg_execute_button = Button(text='Сгенерровать', width=15, height=1)
 pg_execute_button.place(x=0, y=150)
 
 pg_result_label = Label(width=25, height=1)
@@ -40,8 +41,8 @@ pg_result_label.place(x=0, y=100)
 pg_time_label = Label(width=20, height=1)
 pg_time_label.place(x=160, y=100)
 
-pg_copy_button = Button(text="Copy", width=10, height=1)
-pg_copy_button.place(x=260, y=150)
+pg_copy_button = Button(text="Копировать в буфер", width=15, height=1)
+pg_copy_button.place(x=200, y=150)
 pg_copy_button['state'] = 'disabled'
 
 Label(text="Аутентификация", width=15, height=1).place(y=0, x=500)
@@ -63,12 +64,12 @@ au_login_text.place(y=30, x=600)
 au_password_text = Text(width=15, height=1)
 au_password_text.place(y=60, x=600)
 
-Label(text="Регистрация", width=30, height=1).place(x=0, y=250)
-Label(text="Логин:", width=10, height=1).place(x=0, y=280)
+Label(text="Регистрация", height=1).place(x=10, y=210)
+Label(text="Логин:", width=10, height=1).place(x=0, y=250)
 
 reg_login_text = Text(width=15, height=1)
-reg_login_text.insert("1.0", "user")
-reg_login_text.place(x=100, y=280)
+# reg_login_text.insert("1.0", "user")
+reg_login_text.place(x=100, y=250)
 
 sep1 = ttk.Separator(orient=HORIZONTAL)
 sep1.pack(fill="x", pady=199)
@@ -78,23 +79,24 @@ sep1.pack(fill="x", pady=199)
 # reg_ok_button.place(x=250, y=310)
 
 reg_execute_button = Button(width=15, height=1, text='Ввести пароль')
-reg_execute_button.place(x=0, y=340)
+reg_execute_button.place(x=350, y=250)
 
 reg_send_button = Button(width=15, height=1, text='Отправить в БД')
 reg_send_button.place(x=350, y=340)
 
 reg_cancel_button = Button(width=15, height=1, text='Сброс')
-reg_cancel_button.place(x=350, y=275)
+reg_cancel_button.place(x=350, y=295)
 
 reg_pass_text = Text(width=15, height=1)
-reg_pass_text.place(x=190, y=345)
+reg_pass_text.place(x=100, y=295)
 
-Label(text='Требования:').place(x=550, y=210)
-Label(text='1) Пароль не короче 4-х символов').place(x=550, y=230)
-Label(text='2) Ввод пароля не менее 3-х раз').place(x=550, y=250)
-Label(text='3) Пароли должны совпадать').place(x=550, y=270)
-Label(text='4) Логин должен быть уникальным').place(x=550, y=290)
-Label(text='5) Логин не может быть пустым').place(x=550, y=310)
+Label(text="Пароль: ").place(x=15, y=295)
+Label(text='Требования для регистрации:').place(x=550, y=210)
+Label(text='1) Пароль не короче 4-х символов').place(x=550, y=250)
+Label(text='2) Ввод пароля не менее 3-х раз').place(x=550, y=270)
+Label(text='3) Пароли должны совпадать').place(x=550, y=290)
+Label(text='4) Логин должен быть уникальным').place(x=550, y=310)
+Label(text='5) Логин не может быть пустым').place(x=550, y=330)
 
 
 def err():

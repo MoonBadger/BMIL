@@ -2,6 +2,9 @@ import tkinter as tk
 import time
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox as mb
+
+import sql_builder as sql
 
 import mathm
 from generator import Generator
@@ -13,9 +16,7 @@ PASS_COUNT = 3
 
 vs = []
 vector = []
-current_pass_num = 0
 passwords = []
-inp_flag = False
 
 
 root = tk.Tk()
@@ -48,8 +49,8 @@ Label(text="Аутентификация", width=15, height=1).place(y=0, x=500)
 Label(text="Логин: ", width=15, height=1).place(y=30, x=500)
 Label(text="Пароль: ", width=15, height=1).place(y=60, x=500)
 
-pg_execute_button = Button(text='Отправить', width=15, height=1)
-pg_execute_button.place(x=500, y=100)
+reg_execute_button = Button(text='Отправить', width=15, height=1)
+reg_execute_button.place(x=500, y=100)
 
 # au_res_label = Label(text="<Auth_res>", width=30, height=1)
 # au_res_label.place(y=140, x=500)
@@ -86,6 +87,13 @@ reg_send_button.place(x=350, y=340)
 reg_pass_text = Text(width=15, height=1)
 reg_pass_text.place(x=190, y=345)
 
+Label(text='Требования:').place(x=550, y=210)
+Label(text='1) Пароль не короче 4-х символов').place(x=550, y=230)
+Label(text='2) Ввод пароля не менее 3-х раз').place(x=550, y=250)
+Label(text='3) Пароли должны совпадать').place(x=550, y=270)
+Label(text='4) Логин должен быть уникальным').place(x=550, y=290)
+Label(text='5) Логин не может быть пустым').place(x=550, y=310)
+
 
 def err():
     pg_result_label.config(text=ERR_TEXT)
@@ -94,8 +102,6 @@ def err():
 
 
 def generate_password(*args):
-    if pg_execute_button['state'] == 'disabled':
-        return
     try:
         pass_len = int(pg_length_text.get("1.0", END))
         alph_len = int(pg_alphabet_text.get("1.0", END)) - 1
@@ -122,8 +128,8 @@ def input_pass(*args):
     global vs, current_pass_num, passwords, inp_flag, vector
     passwords.append(reg_pass_text.get("1.0", END).replace("\n", ''))
     reg_pass_text.replace('1.0', END, '')
-    vs.append(vector)
-    print(vs)
+    vs.append(mathm.normalize(vector))
+    # print(vs), print(passwords)
     vector = []
 
 
@@ -131,10 +137,34 @@ def editor_press(*args):
     vector.append(time.time())
 
 
+def send(*args):
+    login = reg_login_text.get('1.0', END).replace('\n', '')
+    global passwords, vs, vector
+    if not mathm.all_eq_test(passwords):
+        mb.showerror('Не удалось зарегистрировать', 'Пароли не совпадают')
+    elif len(vs) < 3:
+        mb.showerror('Не удалось зарегистрировать', 'Пароль введён менее трёх раз')
+    elif len(vs[0]) < 3:
+        mb.showerror('Не удалось зарегистрировать', 'Пароль слишком короткий')
+    elif not sql.login_is_unique(login):
+        mb.showerror('Не удалось зарегистрировать', 'Такой логин уже существует')
+    elif login == '':
+        mb.showerror('Не удалось зарегистрировать', 'Логин не должен быть пустым')
+    else:
+        res_vect = mathm.average_of_arrays(vs)
+        sql.send(login, passwords[0], str(res_vect))
+        mb.showinfo('Ок', 'Регистрация успешна!')
+
+    vs = []
+    passwords = []
+    vector = []
+
+
 pg_execute_button.bind('<Button-1>', generate_password)
 pg_copy_button.bind('<Button-1>', copy)
 reg_execute_button.bind('<Button-1>', input_pass)
 reg_pass_text.bind('<KeyPress>', editor_press)
+reg_send_button.bind('<Button-1>', send)
 
 
 root.mainloop()

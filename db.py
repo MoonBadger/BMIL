@@ -10,6 +10,10 @@ class DBManager:
                                 password='14012003', host='localhost')
 
     @staticmethod
+    def aggregate(call):
+        return DBManager.select(call)[0][0]
+
+    @staticmethod
     def select(call):
         try:
             conn = DBManager.connect()

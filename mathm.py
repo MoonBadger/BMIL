@@ -1,13 +1,23 @@
 import numpy as np
 
 
+def all_eq_test(arr):
+    y = arr[0]
+    for x in arr:
+        if x != y:
+            return False
+    return True
+
+
 def normalize(vect):
     v0 = vect[0]
     k = vect[len(vect) - 1] - v0
+    if k == 0:
+        k = 1
     res = []
     for i in range(len(vect)):
         res.append((vect[i] - v0) / k)
-    return res
+    return res[1: len(res) - 1]
 
 
 def cosine_similarity(vector1, vector2):
@@ -21,18 +31,14 @@ def cosine_similarity(vector1, vector2):
 
 
 def average_of_arrays(array_of_arrays):
-    total_sum = 0
-    total_elements = 0
-
-    for array in array_of_arrays:
-        total_sum += sum(array)
-        total_elements += len(array)
-
-    if total_elements == 0:
-        return 0
-
-    average = total_sum / total_elements
-    return average
+    res = []
+    for i in range(len(array_of_arrays[0])):
+        res.append(0)
+        for j in range(len(array_of_arrays)):
+            res[i] += array_of_arrays[j][i]
+    for i in range(len(res)):
+        res[i] /= len(array_of_arrays)
+    return res
 
 
 def mlt(A, B):

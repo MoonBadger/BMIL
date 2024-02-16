@@ -12,11 +12,10 @@ from generator import Generator
 ERR_TEXT = "ERROR: incorrect values"
 generator = Generator()
 
-PASS_COUNT = 3
-
 vs = []
 vector = []
 passwords = []
+read_vct = []
 
 
 root = tk.Tk()
@@ -33,10 +32,10 @@ pg_alphabet_text = Text(width=10, height=1)
 pg_alphabet_text.place(x=200, y=40)
 
 pg_execute_button = Button(text='Сгенерировать', width=15, height=1)
-pg_execute_button.place(x=0, y=100)
+pg_execute_button.place(x=0, y=150)
 
 pg_result_label = Label(width=25, height=1)
-pg_result_label.place(x=0, y=170)
+pg_result_label.place(x=0, y=100)
 
 pg_time_label = Label(width=20, height=1)
 pg_time_label.place(x=160, y=100)
@@ -49,8 +48,8 @@ Label(text="Аутентификация", width=15, height=1).place(y=0, x=500)
 Label(text="Логин: ", width=15, height=1).place(y=30, x=500)
 Label(text="Пароль: ", width=15, height=1).place(y=60, x=500)
 
-reg_execute_button = Button(text='Отправить', width=15, height=1)
-reg_execute_button.place(x=500, y=100)
+au_execute_button = Button(text='Войти', width=15, height=1)
+au_execute_button.place(x=500, y=100)
 
 # au_res_label = Label(text="<Auth_res>", width=30, height=1)
 # au_res_label.place(y=140, x=500)
@@ -83,6 +82,9 @@ reg_execute_button.place(x=0, y=340)
 
 reg_send_button = Button(width=15, height=1, text='Отправить в БД')
 reg_send_button.place(x=350, y=340)
+
+reg_cancel_button = Button(width=15, height=1, text='Сброс')
+reg_cancel_button.place(x=350, y=275)
 
 reg_pass_text = Text(width=15, height=1)
 reg_pass_text.place(x=190, y=345)
@@ -129,12 +131,33 @@ def input_pass(*args):
     passwords.append(reg_pass_text.get("1.0", END).replace("\n", ''))
     reg_pass_text.replace('1.0', END, '')
     vs.append(mathm.normalize(vector))
-    # print(vs), print(passwords)
     vector = []
 
 
 def editor_press(*args):
     vector.append(time.time())
+
+
+def au_editor_press(*args):
+    global read_vct
+    if read_vct == None:
+        read_vct = []
+    read_vct.append(time.time())
+
+
+def reset(*args):
+    global vs, current_pass_num, passwords, inp_flag, vector
+    vs = []
+    passwords = []
+    vector = []
+    reg_pass_text.replace('1.0', END, '')
+
+
+def __send(*args):
+    try:
+        send(args)
+    except:
+        mb.showerror('Ошибка', 'Проверьте корректность введёных данных')
 
 
 def send(*args):
@@ -146,7 +169,7 @@ def send(*args):
         mb.showerror('Не удалось зарегистрировать', 'Пароль введён менее трёх раз')
     elif len(vs[0]) < 3:
         mb.showerror('Не удалось зарегистрировать', 'Пароль слишком короткий')
-    elif not sql.login_is_unique(login):
+    elif not sql.login_is_not_exist(login):
         mb.showerror('Не удалось зарегистрировать', 'Такой логин уже существует')
     elif login == '':
         mb.showerror('Не удалось зарегистрировать', 'Логин не должен быть пустым')
@@ -154,17 +177,55 @@ def send(*args):
         res_vect = mathm.average_of_arrays(vs)
         sql.send(login, passwords[0], str(res_vect))
         mb.showinfo('Ок', 'Регистрация успешна!')
-
     vs = []
     passwords = []
     vector = []
+
+
+def __auth(*args):
+    global read_vct
+    try:
+        auth(args)
+    except:
+        mb.showerror('Не удалось войти', 'Несовпадение биометрических параметров')
+        read_vct = None
+
+
+def auth(*args):
+    global read_vct
+    login = au_login_text.get('1.0', END).replace('\n', '')
+    password = au_password_text.get('1.0', END).replace('\n', '')
+
+    if login == '' or password == '':
+        mb.showerror('Не удалось войти', 'Логин и пароль не могут быть пустыми')
+    elif sql.login_is_not_exist(login):
+        mb.showerror('Не удалось войти', 'Неизвестный логин')
+    else:
+        real_password, real_data = sql.get_au_data(login)
+
+        if password != real_password:
+            mb.showerror('Не удалось войти', 'Неверный пароль')
+        else:
+            data = mathm.normalize(read_vct)
+            parsed_rd = sql.parse(real_data)
+            cm = mathm.cosine_similarity(parsed_rd, data)
+            if cm < 0.99:
+                mb.showerror('Не удалось войти', 'Несовпадение биометрических параметров')
+            else:
+                mb.showinfo('Ок', 'Вход успешен')
+
+    read_vct = None
+    au_password_text.replace("1.0", END, '')
 
 
 pg_execute_button.bind('<Button-1>', generate_password)
 pg_copy_button.bind('<Button-1>', copy)
 reg_execute_button.bind('<Button-1>', input_pass)
 reg_pass_text.bind('<KeyPress>', editor_press)
-reg_send_button.bind('<Button-1>', send)
+reg_send_button.bind('<Button-1>', __send)
+reg_cancel_button.bind('<Button-1>', reset)
+au_password_text.bind('<KeyPress>', au_editor_press)
+au_execute_button.bind('<Button-1>', __auth)
 
 
 root.mainloop()

@@ -1,0 +1,10 @@
+-- auto-generated definition
+create table users
+(
+    id       integer default nextval('user_id_seq'::regclass) not null
+        constraint id
+            primary key,
+    login    varchar,
+    password varchar,
+    data     varchar
+);

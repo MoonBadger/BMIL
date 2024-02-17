@@ -52,12 +52,6 @@ Label(text="Пароль: ", width=15, height=1).place(y=60, x=500)
 au_execute_button = Button(text='Войти', width=15, height=1)
 au_execute_button.place(x=500, y=100)
 
-# au_res_label = Label(text="<Auth_res>", width=30, height=1)
-# au_res_label.place(y=140, x=500)
-
-mathm.mlt([[0]], [[1]])
-mathm.haar_matrix(8)
-
 au_login_text = Text(width=15, height=1)
 au_login_text.place(y=30, x=600)
 
@@ -92,7 +86,7 @@ reg_pass_text.place(x=100, y=295)
 
 Label(text="Пароль: ").place(x=15, y=295)
 Label(text='Требования для регистрации:').place(x=550, y=210)
-Label(text='1) Пароль не короче 4-х символов').place(x=550, y=250)
+Label(text='1) Пароль не короче 5-ти символов').place(x=550, y=250)
 Label(text='2) Ввод пароля не менее 3-х раз').place(x=550, y=270)
 Label(text='3) Пароли должны совпадать').place(x=550, y=290)
 Label(text='4) Логин должен быть уникальным').place(x=550, y=310)
